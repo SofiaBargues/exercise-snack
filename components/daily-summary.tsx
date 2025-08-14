@@ -252,12 +252,7 @@ ${getMotivationalMessage()}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <Button
-        onClick={onReset}
-        className="fixed top-4 right-4 z-50 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium shadow-lg"
-      >
-        Start New Day
-      </Button>
+      
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="flex items-center mb-6">
