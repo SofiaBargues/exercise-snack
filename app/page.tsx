@@ -69,64 +69,61 @@ export default function Home() {
     return new Date().toISOString().split("T")[0]
   }
 
-  const loadStreakData = () => {
+  const checkAndUpdateDayStreak = () => {
     const today = getTodayString()
     const streakData = localStorage.getItem("exerciseStreak")
 
     if (streakData) {
-      const { streak, lastExerciseDate, exercisedToday, lastActiveDate } = JSON.parse(streakData)
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-      const yesterdayString = yesterday.toISOString().split("T")[0]
+      const { streak, lastExerciseDate, exercisedToday, lastAppDate } = JSON.parse(streakData)
 
-      // Check if this is a new day since last activity
-      const storedLastActiveDate = lastActiveDate || lastExerciseDate
+      // Check if this is a new day since last app visit
+      if (lastAppDate && lastAppDate !== today) {
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 1)
+        const yesterdayString = yesterday.toISOString().split("T")[0]
 
-      if (storedLastActiveDate !== today) {
-        // New day detected
-        if (storedLastActiveDate === yesterdayString && exercisedToday) {
-          // Consecutive day and exercised yesterday, increment streak
+        if (lastExerciseDate === lastAppDate && exercisedToday) {
+          // User exercised on the last day they used the app
           const newStreak = streak + 1
           setCurrentStreak(newStreak)
           setHasExercisedToday(false)
 
-          // Update storage with new day
+          // Update localStorage with new day
           const updatedStreakData = {
             streak: newStreak,
-            lastExerciseDate: exercisedToday ? today : lastExerciseDate,
-            exercisedToday: false,
-            lastActiveDate: today,
-          }
-          localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
-        } else if (exercisedToday) {
-          // Had exercised but not consecutive, reset streak to 1
-          setCurrentStreak(1)
-          setHasExercisedToday(false)
-
-          const updatedStreakData = {
-            streak: 1,
             lastExerciseDate: lastExerciseDate,
             exercisedToday: false,
-            lastActiveDate: today,
+            lastAppDate: today,
           }
           localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
         } else {
-          // Didn't exercise yesterday, reset streak
+          // User didn't exercise on the last day, reset streak
           setCurrentStreak(0)
           setHasExercisedToday(false)
 
           const updatedStreakData = {
             streak: 0,
-            lastExerciseDate: lastExerciseDate,
+            lastExerciseDate: null,
             exercisedToday: false,
-            lastActiveDate: today,
+            lastAppDate: today,
           }
           localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
         }
       } else {
-        // Same day
+        // Same day or first time setting lastAppDate
         setCurrentStreak(streak)
         setHasExercisedToday(exercisedToday)
+
+        // Update lastAppDate if not set
+        if (!lastAppDate) {
+          const updatedStreakData = {
+            streak,
+            lastExerciseDate,
+            exercisedToday,
+            lastAppDate: today,
+          }
+          localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
+        }
       }
     } else {
       // First time using the app
@@ -137,10 +134,14 @@ export default function Home() {
         streak: 0,
         lastExerciseDate: null,
         exercisedToday: false,
-        lastActiveDate: today,
+        lastAppDate: today,
       }
       localStorage.setItem("exerciseStreak", JSON.stringify(initialStreakData))
     }
+
+    // Reset countdown and allow spinning for new day
+    setTimeLeft(0)
+    setCanSpin(true)
   }
 
   const updateStreak = () => {
@@ -149,67 +150,32 @@ export default function Home() {
     if (!hasExercisedToday) {
       setHasExercisedToday(true)
 
-      const streakData = {
-        streak: currentStreak,
+      const streakData = JSON.parse(localStorage.getItem("exerciseStreak") || "{}")
+      const updatedStreakData = {
+        ...streakData,
         lastExerciseDate: today,
         exercisedToday: true,
-        lastActiveDate: today,
+        lastAppDate: today,
       }
 
-      localStorage.setItem("exerciseStreak", JSON.stringify(streakData))
-    }
-  }
-
-  const handleStartNewDay = () => {
-    const today = getTodayString()
-    const streakData = localStorage.getItem("exerciseStreak")
-
-    if (streakData) {
-      const { streak, exercisedToday } = JSON.parse(streakData)
-
-      const newStreak = exercisedToday ? streak + 1 : 0
-
-      setCurrentStreak(newStreak)
-      setHasExercisedToday(false)
-      setCompletedChallenges(0)
-      setTimeLeft(0)
-      setCanSpin(true)
-
-      const updatedStreakData = {
-        streak: newStreak,
-        lastExerciseDate: exercisedToday ? today : null,
-        exercisedToday: false,
-        lastActiveDate: today,
-      }
       localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
     }
   }
 
   useEffect(() => {
-    loadStreakData()
+    checkAndUpdateDayStreak()
   }, [])
 
+  // Timer countdown
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-
-    if (timeLeft > 0 && !canSpin) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setCanSpin(true)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
+    if (hasStarted && timeLeft > 0 && !canSpin) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
+      return () => clearTimeout(timer)
+    } else if (hasStarted && timeLeft === 0) {
+      setCanSpin(true)
+      setTimeLeft(intervalMinutes * 60)
     }
-
-    return () => {
-      if (interval) {
-        clearInterval(interval)
-      }
-    }
-  }, [timeLeft, canSpin])
+  }, [timeLeft, canSpin, intervalMinutes, hasStarted])
 
   const handleExerciseSelection = (exercises: Exercise[]) => {
     setSelectedExercises(exercises)
@@ -269,6 +235,7 @@ export default function Home() {
         exercises={selectedExercises}
         onReset={handleReset}
         onBack={() => setAppState("main")}
+        currentStreak={currentStreak}
       />
     )
   }
@@ -283,14 +250,6 @@ export default function Home() {
           className="bg-white/90 backdrop-blur-sm border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-700 shadow-lg"
         >
           <Edit3 className="w-4 h-4" />
-        </Button>
-        <Button
-          onClick={handleStartNewDay}
-          variant="outline"
-          size="sm"
-          className="bg-white/90 backdrop-blur-sm border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700 shadow-lg"
-        >
-          Start New Day
         </Button>
         {hasStarted && (
           <Button

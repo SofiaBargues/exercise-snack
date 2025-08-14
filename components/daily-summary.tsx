@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ArrowLeft, Download } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import type { Exercise } from "@/app/page"
 
 interface DailySummaryProps {
@@ -12,9 +12,10 @@ interface DailySummaryProps {
   exercises: Exercise[]
   onReset: () => void
   onBack: () => void
+  currentStreak: number
 }
 
-export function DailySummary({ completedChallenges, exercises, onReset, onBack }: DailySummaryProps) {
+export function DailySummary({ completedChallenges, exercises, onReset, onBack, currentStreak }: DailySummaryProps) {
   const [showShareDialog, setShowShareDialog] = useState(false)
   const summaryRef = useRef<HTMLDivElement>(null)
 
@@ -36,6 +37,7 @@ export function DailySummary({ completedChallenges, exercises, onReset, onBack }
     return `💪 My Exercise Summary 💪
 
 ✅ Completed: ${completedChallenges} challenges
+🔥 Streak: ${currentStreak} days
 🔥 Calories burned: ${caloriesBurned} kcal
 ⏱️ Active time: ${minutesActive} minutes
 💪 Health years gained: ${healthYearsGained}
@@ -86,6 +88,15 @@ ${getMotivationalMessage()}
           bgColor: "#dcfce7",
           iconBg: "#22c55e",
           textColor: "#1f2937",
+        },
+        {
+          label: `${currentStreak} days`,
+          sublabel: "Streak",
+          value: "",
+          icon: "🔥",
+          bgColor: "#fff7ed",
+          iconBg: "#f97316",
+          textColor: "#f97316",
         },
         {
           label: `${caloriesBurned} kcal`,
@@ -252,7 +263,12 @@ ${getMotivationalMessage()}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      
+      <Button
+        onClick={onReset}
+        className="fixed top-4 right-4 z-50 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium shadow-lg"
+      >
+        Start New Day
+      </Button>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="flex items-center mb-6">
@@ -276,11 +292,17 @@ ${getMotivationalMessage()}
           </div>
 
           {/* Main Stats */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="grid md:grid-cols-4 gap-6 mb-12">
             <Card className="p-6 text-center bg-gradient-to-br from-green-50 to-green-100 border-green-200">
               <div className="text-4xl mb-2">✅</div>
               <div className="text-3xl font-bold text-green-700 mb-1">{completedChallenges}</div>
               <div className="text-sm text-green-600 font-medium">Challenges Completed</div>
+            </Card>
+
+            <Card className="p-6 text-center bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+              <div className="text-4xl mb-2">🔥</div>
+              <div className="text-3xl font-bold text-orange-700 mb-1">{currentStreak}</div>
+              <div className="text-sm text-orange-600 font-medium">Day Streak</div>
             </Card>
 
             <Card className="p-6 text-center bg-gradient-to-br from-red-50 to-red-100 border-red-200">
@@ -327,7 +349,6 @@ ${getMotivationalMessage()}
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 justify-center">
-          
           <Button onClick={handleShare} size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8">
             Share Summary
           </Button>
