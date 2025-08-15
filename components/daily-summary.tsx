@@ -267,64 +267,66 @@ ${getMotivationalMessage()}
           {/* Summary content for image generation */}
           <div ref={summaryRef}>
             {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Daily Summary</h1>
-              <p className="text-xl text-gray-600">Your exercise achievements today</p>
+            <div className="text-center mb-6 md:mb-12">
+              <h1 className="text-2xl md:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Daily Summary</h1>
+              <p className="text-sm md:text-xl text-gray-600">Your exercise achievements today</p>
             </div>
 
             {/* Main Stats */}
-            <div className="grid md:grid-cols-4 gap-6 mb-12">
-              <Card className="p-6 text-center bg-white border-green-200 shadow-lg">
-                <div className="text-4xl mb-3">✅</div>
-                <div className="text-3xl font-bold text-green-700 mb-2">{completedChallenges}</div>
-                <div className="text-sm text-gray-600 font-medium">Challenges Completed</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-12">
+              <Card className="p-3 md:p-6 text-center bg-white border-green-200 shadow-lg">
+                <div className="text-2xl md:text-4xl mb-1 md:mb-3">✅</div>
+                <div className="text-xl md:text-3xl font-bold text-green-700 mb-1 md:mb-2">{completedChallenges}</div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">Challenges Completed</div>
               </Card>
 
-              <Card className="p-6 text-center bg-white border-orange-200 shadow-lg">
-                <div className="text-4xl mb-3">🔥</div>
-                <div className="text-3xl font-bold text-orange-700 mb-2">{dayStreak}</div>
-                <div className="text-sm text-gray-600 font-medium">Day Streak</div>
+              <Card className="p-3 md:p-6 text-center bg-white border-orange-200 shadow-lg">
+                <div className="text-2xl md:text-4xl mb-1 md:mb-3">🔥</div>
+                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">{dayStreak}</div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">Day Streak</div>
               </Card>
 
-              <Card className="p-6 text-center bg-white border-orange-200 shadow-lg">
-                <div className="text-4xl mb-3">💪</div>
-                <div className="text-3xl font-bold text-orange-700 mb-2">{caloriesBurned}</div>
-                <div className="text-sm text-gray-600 font-medium">Calories Burned</div>
+              <Card className="p-3 md:p-6 text-center bg-white border-orange-200 shadow-lg">
+                <div className="text-2xl md:text-4xl mb-1 md:mb-3">💪</div>
+                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">{caloriesBurned}</div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">Calories Burned</div>
               </Card>
 
-              <Card className="p-6 text-center bg-white border-orange-200 shadow-lg">
-                <div className="text-4xl mb-3">⏱️</div>
-                <div className="text-3xl font-bold text-orange-700 mb-2">{minutesActive}</div>
-                <div className="text-sm text-gray-600 font-medium">Minutes Active</div>
+              <Card className="p-3 md:p-6 text-center bg-white border-orange-200 shadow-lg">
+                <div className="text-2xl md:text-4xl mb-1 md:mb-3">⏱️</div>
+                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">{minutesActive}</div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">Minutes Active</div>
               </Card>
             </div>
 
             {/* Health Impact */}
-            <Card className="p-8 mb-8 bg-white border-orange-200 shadow-lg">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Health Impact Analysis</h2>
+            <Card className="p-4 md:p-8 mb-4 md:mb-8 bg-white border-orange-200 shadow-lg">
+              <h2 className="text-lg md:text-2xl font-bold text-gray-900 mb-3 md:mb-6 text-center">
+                Health Impact Analysis
+              </h2>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-6">
                 <div className="text-center">
-                  <div className="text-5xl mb-3">💪</div>
-                  <div className="text-2xl font-bold text-orange-700 mb-2">+{healthYearsGained}</div>
-                  <div className="text-sm text-gray-700 font-medium">Estimated Health Years Gained</div>
-                  <div className="text-xs text-gray-500 mt-1">Based on exercise longevity studies</div>
+                  <div className="text-2xl md:text-5xl mb-1 md:mb-3">💪</div>
+                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">+{healthYearsGained}</div>
+                  <div className="text-xs md:text-sm text-gray-700 font-medium">Health Years Gained</div>
+                  <div className="text-xs text-gray-500 mt-1 hidden md:block">Based on exercise longevity studies</div>
                 </div>
 
                 <div className="text-center">
-                  <div className="text-5xl mb-3">😊</div>
-                  <div className="text-2xl font-bold text-orange-700 mb-2">{stressReduction}%</div>
-                  <div className="text-sm text-gray-700 font-medium">Stress Reduction</div>
-                  <div className="text-xs text-gray-500 mt-1">Exercise releases endorphins</div>
+                  <div className="text-2xl md:text-5xl mb-1 md:mb-3">😊</div>
+                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">{stressReduction}%</div>
+                  <div className="text-xs md:text-sm text-gray-700 font-medium">Stress Reduction</div>
+                  <div className="text-xs text-gray-500 mt-1 hidden md:block">Exercise releases endorphins</div>
                 </div>
 
                 <div className="text-center">
-                  <div className="text-5xl mb-3">🧠</div>
-                  <div className="text-2xl font-bold text-orange-700 mb-2">
+                  <div className="text-2xl md:text-5xl mb-1 md:mb-3">🧠</div>
+                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">
                     +{Math.min(completedChallenges * 10, 100)}%
                   </div>
-                  <div className="text-sm text-gray-700 font-medium">Focus Improvement</div>
-                  <div className="text-xs text-gray-500 mt-1">Better blood flow to brain</div>
+                  <div className="text-xs md:text-sm text-gray-700 font-medium">Focus Improvement</div>
+                  <div className="text-xs text-gray-500 mt-1 hidden md:block">Better blood flow to brain</div>
                 </div>
               </div>
             </Card>
