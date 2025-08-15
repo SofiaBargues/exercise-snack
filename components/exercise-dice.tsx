@@ -122,7 +122,7 @@ export function ExerciseDice({
 
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Exercise Dice</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">Exercise Snack</h1>
           <p className="text-base sm:text-lg text-gray-600 px-2">
             Spin the dice when ready for your next exercise snack!
           </p>
