@@ -65,6 +65,21 @@ export default function Home() {
   const [currentStreak, setCurrentStreak] = useState(0)
   const [hasExercisedToday, setHasExercisedToday] = useState(false)
 
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [streakGlow, setStreakGlow] = useState(false)
+  const [previousStreak, setPreviousStreak] = useState(0)
+
+  const [confettiPieces, setConfettiPieces] = useState<
+    Array<{
+      id: number
+      x: number
+      y: number
+      color: string
+      rotation: number
+      delay: number
+    }>
+  >([])
+
   const getTodayString = () => {
     return new Date().toISOString().split("T")[0]
   }
@@ -74,56 +89,84 @@ export default function Home() {
     const streakData = localStorage.getItem("exerciseStreak")
 
     if (streakData) {
-      const { streak, lastExerciseDate, exercisedToday, lastAppDate } = JSON.parse(streakData)
+      try {
+        const parsed = JSON.parse(streakData)
+        const { streak = 0, lastExerciseDate = null, exercisedToday = false, lastActiveDate = null } = parsed
 
-      // Check if this is a new day since last app visit
-      if (lastAppDate && lastAppDate !== today) {
         const yesterday = new Date()
         yesterday.setDate(yesterday.getDate() - 1)
         const yesterdayString = yesterday.toISOString().split("T")[0]
 
-        if (lastExerciseDate === lastAppDate && exercisedToday) {
-          // User exercised on the last day they used the app
-          const newStreak = streak + 1
-          setCurrentStreak(newStreak)
-          setHasExercisedToday(false)
+        // Check if this is a new day since last activity
+        const storedLastActiveDate = lastActiveDate || lastExerciseDate
 
-          // Update localStorage with new day
-          const updatedStreakData = {
-            streak: newStreak,
-            lastExerciseDate: lastExerciseDate,
-            exercisedToday: false,
-            lastAppDate: today,
+        if (storedLastActiveDate !== today) {
+          // New day detected - automatic day change
+          if (storedLastActiveDate === yesterdayString && exercisedToday) {
+            // Consecutive day and exercised yesterday, increment streak
+            const newStreak = streak + 1
+            setCurrentStreak(newStreak)
+            setHasExercisedToday(false)
+            setCompletedChallenges(0)
+            setTimeLeft(0)
+            setCanSpin(true)
+
+            // Update storage with new day
+            const updatedStreakData = {
+              streak: newStreak,
+              lastExerciseDate: exercisedToday ? today : lastExerciseDate,
+              exercisedToday: false,
+              lastActiveDate: today,
+            }
+            localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
+          } else if (exercisedToday) {
+            // Had exercised but not consecutive, reset streak to 1
+            setCurrentStreak(1)
+            setHasExercisedToday(false)
+            setCompletedChallenges(0)
+            setTimeLeft(0)
+            setCanSpin(true)
+
+            const updatedStreakData = {
+              streak: 1,
+              lastExerciseDate: lastExerciseDate,
+              exercisedToday: false,
+              lastActiveDate: today,
+            }
+            localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
+          } else {
+            // Didn't exercise yesterday, reset streak to 0
+            setCurrentStreak(0)
+            setHasExercisedToday(false)
+            setCompletedChallenges(0)
+            setTimeLeft(0)
+            setCanSpin(true)
+
+            const updatedStreakData = {
+              streak: 0,
+              lastExerciseDate: lastExerciseDate,
+              exercisedToday: false,
+              lastActiveDate: today,
+            }
+            localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
           }
-          localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
         } else {
-          // User didn't exercise on the last day, reset streak
-          setCurrentStreak(0)
-          setHasExercisedToday(false)
-
-          const updatedStreakData = {
-            streak: 0,
-            lastExerciseDate: null,
-            exercisedToday: false,
-            lastAppDate: today,
-          }
-          localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
+          // Same day
+          setCurrentStreak(streak)
+          setHasExercisedToday(exercisedToday)
         }
-      } else {
-        // Same day or first time setting lastAppDate
-        setCurrentStreak(streak)
-        setHasExercisedToday(exercisedToday)
+      } catch (error) {
+        console.log("[v0] Error parsing streak data, resetting:", error)
+        setCurrentStreak(0)
+        setHasExercisedToday(false)
 
-        // Update lastAppDate if not set
-        if (!lastAppDate) {
-          const updatedStreakData = {
-            streak,
-            lastExerciseDate,
-            exercisedToday,
-            lastAppDate: today,
-          }
-          localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
+        const initialStreakData = {
+          streak: 0,
+          lastExerciseDate: null,
+          exercisedToday: false,
+          lastActiveDate: today,
         }
+        localStorage.setItem("exerciseStreak", JSON.stringify(initialStreakData))
       }
     } else {
       // First time using the app
@@ -134,14 +177,10 @@ export default function Home() {
         streak: 0,
         lastExerciseDate: null,
         exercisedToday: false,
-        lastAppDate: today,
+        lastActiveDate: today,
       }
       localStorage.setItem("exerciseStreak", JSON.stringify(initialStreakData))
     }
-
-    // Reset countdown and allow spinning for new day
-    setTimeLeft(0)
-    setCanSpin(true)
   }
 
   const updateStreak = () => {
@@ -150,15 +189,40 @@ export default function Home() {
     if (!hasExercisedToday) {
       setHasExercisedToday(true)
 
-      const streakData = JSON.parse(localStorage.getItem("exerciseStreak") || "{}")
-      const updatedStreakData = {
-        ...streakData,
+      setPreviousStreak(currentStreak)
+      const newStreak = currentStreak + 1
+
+      setStreakGlow(true)
+
+      const newConfetti = Array.from({ length: 50 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        color: ["#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"][Math.floor(Math.random() * 6)],
+        rotation: Math.random() * 360,
+        delay: Math.random() * 2,
+      }))
+      setConfettiPieces(newConfetti)
+
+      setTimeout(() => {
+        setCurrentStreak(newStreak)
+        setShowCelebration(true)
+      }, 300)
+
+      setTimeout(() => {
+        setStreakGlow(false)
+        setShowCelebration(false)
+        setConfettiPieces([]) // Clear confetti after animation
+      }, 3000)
+
+      const streakData = {
+        streak: newStreak,
         lastExerciseDate: today,
         exercisedToday: true,
-        lastAppDate: today,
+        lastActiveDate: today,
       }
 
-      localStorage.setItem("exerciseStreak", JSON.stringify(updatedStreakData))
+      localStorage.setItem("exerciseStreak", JSON.stringify(streakData))
     }
   }
 
@@ -166,16 +230,27 @@ export default function Home() {
     checkAndUpdateDayStreak()
   }, [])
 
-  // Timer countdown
   useEffect(() => {
-    if (hasStarted && timeLeft > 0 && !canSpin) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
-      return () => clearTimeout(timer)
-    } else if (hasStarted && timeLeft === 0) {
-      setCanSpin(true)
-      setTimeLeft(intervalMinutes * 60)
+    let interval: NodeJS.Timeout | null = null
+
+    if (timeLeft > 0 && !canSpin) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setCanSpin(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
     }
-  }, [timeLeft, canSpin, intervalMinutes, hasStarted])
+
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
+    }
+  }, [timeLeft, canSpin])
 
   const handleExerciseSelection = (exercises: Exercise[]) => {
     setSelectedExercises(exercises)
@@ -233,15 +308,50 @@ export default function Home() {
       <DailySummary
         completedChallenges={completedChallenges}
         exercises={selectedExercises}
+        dayStreak={currentStreak}
         onReset={handleReset}
         onBack={() => setAppState("main")}
-        currentStreak={currentStreak}
       />
     )
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+      {showCelebration && confettiPieces.length > 0 && (
+        <div className="fixed inset-0 z-40 pointer-events-none">
+          {confettiPieces.map((piece) => (
+            <div
+              key={piece.id}
+              className="absolute w-3 h-3 animate-bounce"
+              style={{
+                left: `${piece.x}%`,
+                top: `${piece.y}%`,
+                backgroundColor: piece.color,
+                transform: `rotate(${piece.rotation}deg)`,
+                animationDelay: `${piece.delay}s`,
+                animationDuration: "3s",
+                animationTimingFunction: "ease-out",
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {showCelebration && (
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center animate-pulse">
+              <div className="text-4xl font-bold text-green-600 bg-white/95 px-8 py-4 rounded-2xl shadow-2xl border-2 border-green-200">
+                ¡Felicitaciones! 🎉
+              </div>
+              <div className="text-xl text-gray-700 mt-4 bg-white/90 px-6 py-3 rounded-xl shadow-lg">
+                ¡Nuevo día de racha alcanzado!
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
         <Button
           onClick={() => setIsEditMode(!isEditMode)}
@@ -277,8 +387,20 @@ export default function Home() {
                 <div className="text-2xl font-bold text-green-600">{completedChallenges}</div>
                 <div className="text-sm text-gray-600">Completed</div>
               </div>
-              <div className="text-center p-4 bg-orange-50 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600">{currentStreak}</div>
+              <div
+                className={cn(
+                  "text-center p-4 bg-orange-50 rounded-lg transition-all duration-500",
+                  streakGlow && "bg-yellow-100 shadow-lg shadow-yellow-300/50 scale-110",
+                )}
+              >
+                <div
+                  className={cn(
+                    "text-2xl font-bold text-orange-600 transition-all duration-300",
+                    streakGlow && "text-yellow-600 text-3xl animate-pulse",
+                  )}
+                >
+                  {currentStreak}
+                </div>
                 <div className="text-sm text-gray-600">Day Streak</div>
               </div>
             </div>
@@ -329,25 +451,7 @@ export default function Home() {
             </div>
 
             {/* Exercise Pool */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Your Exercise Pool</h3>
-              <div className="flex justify-center items-center">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 justify-items-center max-w-lg mx-auto">
-                  {selectedExercises.map((exercise) => (
-                    <div
-                      key={exercise.id}
-                      className={cn(
-                        "text-center p-3 rounded-lg transition-all flex flex-col items-center justify-center min-h-[80px] min-w-[80px] w-20 h-20",
-                        currentExercise?.id === exercise.id ? "bg-orange-100 border-2 border-orange-500" : "bg-gray-50",
-                      )}
-                    >
-                      <div className="text-2xl mb-1 flex items-center justify-center">{exercise.icon}</div>
-                      <div className="text-xs font-medium text-gray-700 text-center leading-tight">{exercise.name}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <div className="mb-6"></div>
           </Card>
         </div>
       </div>
