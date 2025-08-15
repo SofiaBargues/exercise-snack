@@ -262,109 +262,124 @@ ${getMotivationalMessage()}
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="flex items-center mb-6">
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Exercise Snack
-          </Button>
-        </div>
-
-        {/* Summary content for image generation */}
-        <div ref={summaryRef}>
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Daily Summary</h1>
-            <p className="text-xl text-gray-600">Your exercise achievements today</p>
+    <div className="min-h-screen bg-orange-50">
+      <div className="container mx-auto max-w-4xl px-6 py-12 flex flex-col items-center justify-center min-h-screen">
+        <div className="w-full">
+          <div className="flex items-center mb-8">
+            <Button
+              onClick={onBack}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-white/50 font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Exercise Dice
+            </Button>
           </div>
 
-          {/* Main Stats */}
-          <div className="grid md:grid-cols-4 gap-6 mb-12">
-            <Card className="p-6 text-center bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <div className="text-4xl mb-2">✅</div>
-              <div className="text-3xl font-bold text-green-700 mb-1">{completedChallenges}</div>
-              <div className="text-sm text-green-600 font-medium">Challenges Completed</div>
-            </Card>
-
-            <Card className="p-6 text-center bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-              <div className="text-4xl mb-2">🔥</div>
-              <div className="text-3xl font-bold text-yellow-700 mb-1">{dayStreak}</div>
-              <div className="text-sm text-yellow-600 font-medium">Day Streak</div>
-            </Card>
-
-            <Card className="p-6 text-center bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-              <div className="text-4xl mb-2">💪</div>
-              <div className="text-3xl font-bold text-red-700 mb-1">{caloriesBurned}</div>
-              <div className="text-sm text-red-600 font-medium">Calories Burned</div>
-            </Card>
-
-            <Card className="p-6 text-center bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <div className="text-4xl mb-2">⏱️</div>
-              <div className="text-3xl font-bold text-blue-700 mb-1">{minutesActive}</div>
-              <div className="text-sm text-blue-600 font-medium">Minutes Active</div>
-            </Card>
-          </div>
-
-          {/* Health Impact */}
-          <Card className="p-8 mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Health Impact Analysis</h2>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-5xl mb-3">💪</div>
-                <div className="text-2xl font-bold text-blue-600 mb-2">+{healthYearsGained}</div>
-                <div className="text-sm text-gray-700 font-medium">Estimated Health Years Gained</div>
-                <div className="text-xs text-gray-500 mt-1">Based on exercise longevity studies</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-5xl mb-3">😊</div>
-                <div className="text-2xl font-bold text-blue-600 mb-2">{stressReduction}%</div>
-                <div className="text-sm text-gray-700 font-medium">Stress Reduction</div>
-                <div className="text-xs text-gray-500 mt-1">Exercise releases endorphins</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-5xl mb-3">🧠</div>
-                <div className="text-2xl font-bold text-blue-600 mb-2">+{Math.min(completedChallenges * 10, 100)}%</div>
-                <div className="text-sm text-gray-700 font-medium">Focus Improvement</div>
-                <div className="text-xs text-gray-500 mt-1">Better blood flow to brain</div>
-              </div>
+          {/* Summary content for image generation */}
+          <div ref={summaryRef}>
+            {/* Header */}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Daily Summary</h1>
+              <p className="text-xl text-gray-600">Your exercise achievements today</p>
             </div>
-          </Card>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Button onClick={handleShare} size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8">
-            Share Summary
-          </Button>
+            {/* Main Stats */}
+            <div className="grid md:grid-cols-4 gap-6 mb-12">
+              <Card className="p-6 text-center bg-white border-green-200 shadow-lg">
+                <div className="text-4xl mb-3">✅</div>
+                <div className="text-3xl font-bold text-green-700 mb-2">{completedChallenges}</div>
+                <div className="text-sm text-gray-600 font-medium">Challenges Completed</div>
+              </Card>
+
+              <Card className="p-6 text-center bg-white border-orange-200 shadow-lg">
+                <div className="text-4xl mb-3">🔥</div>
+                <div className="text-3xl font-bold text-orange-700 mb-2">{dayStreak}</div>
+                <div className="text-sm text-gray-600 font-medium">Day Streak</div>
+              </Card>
+
+              <Card className="p-6 text-center bg-white border-orange-200 shadow-lg">
+                <div className="text-4xl mb-3">💪</div>
+                <div className="text-3xl font-bold text-orange-700 mb-2">{caloriesBurned}</div>
+                <div className="text-sm text-gray-600 font-medium">Calories Burned</div>
+              </Card>
+
+              <Card className="p-6 text-center bg-white border-orange-200 shadow-lg">
+                <div className="text-4xl mb-3">⏱️</div>
+                <div className="text-3xl font-bold text-orange-700 mb-2">{minutesActive}</div>
+                <div className="text-sm text-gray-600 font-medium">Minutes Active</div>
+              </Card>
+            </div>
+
+            {/* Health Impact */}
+            <Card className="p-8 mb-8 bg-white border-orange-200 shadow-lg">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Health Impact Analysis</h2>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-5xl mb-3">💪</div>
+                  <div className="text-2xl font-bold text-orange-700 mb-2">+{healthYearsGained}</div>
+                  <div className="text-sm text-gray-700 font-medium">Estimated Health Years Gained</div>
+                  <div className="text-xs text-gray-500 mt-1">Based on exercise longevity studies</div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-5xl mb-3">😊</div>
+                  <div className="text-2xl font-bold text-orange-700 mb-2">{stressReduction}%</div>
+                  <div className="text-sm text-gray-700 font-medium">Stress Reduction</div>
+                  <div className="text-xs text-gray-500 mt-1">Exercise releases endorphins</div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-5xl mb-3">🧠</div>
+                  <div className="text-2xl font-bold text-orange-700 mb-2">
+                    +{Math.min(completedChallenges * 10, 100)}%
+                  </div>
+                  <div className="text-sm text-gray-700 font-medium">Focus Improvement</div>
+                  <div className="text-xs text-gray-500 mt-1">Better blood flow to brain</div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button
+              onClick={handleShare}
+              size="lg"
+              className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 font-semibold shadow-lg"
+            >
+              Share Summary
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white border-orange-200">
           <DialogHeader>
-            <DialogTitle className="text-center">Share Your Progress</DialogTitle>
+            <DialogTitle className="text-center font-bold text-gray-900">Share Your Progress</DialogTitle>
           </DialogHeader>
 
           <div className="py-4">
-            <div className="bg-gray-50 p-4 rounded-lg mb-4 text-sm whitespace-pre-line">
+            <div className="bg-orange-50 p-4 rounded-lg mb-4 text-sm whitespace-pre-line border border-orange-200">
               {generateShareableContent()}
             </div>
 
-            <div className="flex gap-2">
-              <Button onClick={copyToClipboard} className="flex-1">
+            <div className="flex gap-3">
+              <Button
+                onClick={copyToClipboard}
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium"
+              >
                 Copy to Clipboard
               </Button>
-              <Button onClick={() => setShowShareDialog(false)} variant="outline" className="flex-1">
+              <Button
+                onClick={() => setShowShareDialog(false)}
+                variant="outline"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
                 Close
               </Button>
             </div>

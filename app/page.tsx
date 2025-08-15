@@ -420,7 +420,7 @@ export default function Home() {
         <div className="fixed inset-0 z-50 pointer-events-none">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center animate-pulse">
-              <div className="text-4xl font-bold text-green-600 bg-white/95 px-8 py-4 rounded-2xl shadow-2xl border-2 border-green-200">
+              <div className="text-4xl font-bold text-orange-700 bg-white/95 px-8 py-4 rounded-2xl shadow-2xl border-2 border-orange-200">
                 ¡Felicitaciones! 🎉
               </div>
               <div className="text-xl text-gray-700 mt-4 bg-white/90 px-6 py-3 rounded-xl shadow-lg">
@@ -431,12 +431,12 @@ export default function Home() {
         </div>
       )}
 
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-6 right-6 z-50 flex flex-col gap-3">
         <Button
           onClick={() => setIsEditMode(!isEditMode)}
           variant="outline"
           size="sm"
-          className="bg-white/90 backdrop-blur-sm border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-700 shadow-lg"
+          className="bg-white/95 backdrop-blur-sm border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800 shadow-lg font-medium"
         >
           <Edit3 className="w-4 h-4" />
         </Button>
@@ -445,86 +445,85 @@ export default function Home() {
             onClick={() => setAppState("summary")}
             variant="outline"
             size="sm"
-            className="bg-white/90 backdrop-blur-sm border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 shadow-lg"
+            className="bg-white/95 backdrop-blur-sm border-orange-200 text-orange-700 hover:bg-orange-50 hover:text-orange-800 shadow-lg font-medium"
           >
             Summary
           </Button>
         )}
       </div>
 
-      <div className="px-4 py-6 sm:py-12 relative z-10 w-full max-w-4xl">
-        <div className="space-y-6">
-          <Card className="p-6 sm:p-8">
-            <div className="text-center mb-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Exercise Snack</h1>
-              <p className="text-gray-600">Spin the dice when ready for your next exercise snack!</p>
+      <div className="px-6 py-8 relative z-10 w-full max-w-2xl">
+        <div className="space-y-8">
+          <Card className="p-8 bg-white/95 backdrop-blur-sm border-orange-200 shadow-xl">
+            <div className="text-center mb-8">
+              <h1 className="font-bold text-gray-900 mb-3 text-5xl">Exercise Dice</h1>
+              <p className="text-gray-600 text-xl">Spin the dice when ready for your next exercise snack!</p>
             </div>
 
-            {/* Stats Bar */}
-            <div className="flex justify-center gap-4 mb-8">
+            <div className="flex justify-center gap-6 mb-10">
               <div
                 className={cn(
-                  "text-center p-4 bg-green-50 rounded-lg transition-all duration-500",
+                  "text-center p-6 bg-green-50 rounded-xl border border-green-200 transition-all duration-500 min-w-[120px]",
                   completedCountAnimation && "scale-125 bg-green-100 shadow-lg shadow-green-300/50",
                 )}
               >
                 <div
                   className={cn(
-                    "text-2xl font-bold text-green-600 transition-all duration-300",
-                    completedCountAnimation && "text-3xl animate-bounce",
+                    "text-3xl font-bold text-green-700 transition-all duration-300 mb-2",
+                    completedCountAnimation && "text-4xl animate-bounce",
                   )}
                 >
                   {completedChallenges}
                 </div>
-                <div className="text-sm text-gray-600">Completed</div>
+                <div className="text-sm font-medium text-gray-600">Completed</div>
               </div>
               <div
                 className={cn(
-                  "text-center p-4 bg-orange-50 rounded-lg transition-all duration-500",
-                  streakGlow && "bg-yellow-100 shadow-lg shadow-yellow-300/50 scale-110",
+                  "text-center p-6 bg-orange-50 rounded-xl border border-orange-200 transition-all duration-500 min-w-[120px]",
+                  streakGlow && "bg-yellow-100 shadow-lg shadow-yellow-300/50 scale-110 border-yellow-300",
                 )}
               >
                 <div
                   className={cn(
-                    "text-2xl font-bold text-orange-600 transition-all duration-300",
-                    streakGlow && "text-yellow-600 text-3xl animate-pulse",
+                    "text-3xl font-bold text-orange-700 transition-all duration-300 mb-2",
+                    streakGlow && "text-yellow-600 text-4xl animate-pulse",
                   )}
                 >
                   {currentStreak}
                 </div>
-                <div className="text-sm text-gray-600">Day Streak</div>
+                <div className="text-sm font-medium text-gray-600">Day Streak</div>
               </div>
             </div>
 
-            {/* Timer Display */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-10">
               {canSpin ? (
-                <div className="text-4xl sm:text-6xl font-bold text-green-600 mb-2">Ready!</div>
+                <div className="text-5xl font-bold text-green-700 mb-3">Ready!</div>
               ) : (
-                <div className="text-4xl sm:text-6xl font-bold text-orange-600 mb-2">{formatTime(timeLeft)}</div>
+                <div className="text-5xl font-bold text-orange-700 mb-3">{formatTime(timeLeft)}</div>
               )}
-              <div className="text-lg text-gray-600">{canSpin ? "Ready to spin!" : "Next exercise in..."}</div>
+              <div className="text-lg font-medium text-gray-600">
+                {canSpin ? "Ready to spin!" : "Next exercise in..."}
+              </div>
             </div>
 
-            {/* Dice */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-10">
               <div
                 className={cn(
-                  "w-32 h-32 bg-white rounded-2xl shadow-2xl border-4 border-orange-200 flex items-center justify-center transition-transform duration-300",
+                  "w-36 h-36 bg-white rounded-2xl shadow-2xl border-4 border-orange-300 flex items-center justify-center transition-transform duration-300",
                   isSpinning && "animate-bounce",
-                  canSpin && "hover:scale-105 cursor-pointer",
+                  canSpin && "hover:scale-105 cursor-pointer hover:border-orange-400",
                   exerciseAnimation && "animate-pulse scale-110",
                 )}
                 onClick={spinDice}
               >
                 {isSpinning ? (
-                  <div className="text-4xl animate-spin">🎲</div>
+                  <div className="text-5xl animate-spin">🎲</div>
                 ) : currentExercise && !canSpin ? (
                   <div className="text-center">
                     <div
                       className={cn(
-                        "text-4xl mb-1 transition-all duration-500",
-                        exerciseAnimation && "text-5xl animate-bounce",
+                        "text-5xl mb-2 transition-all duration-500",
+                        exerciseAnimation && "text-6xl animate-bounce",
                       )}
                     >
                       {currentExercise.icon}
@@ -532,38 +531,32 @@ export default function Home() {
                     <div className="text-xs font-semibold text-gray-700">{currentExercise.name}</div>
                   </div>
                 ) : (
-                  <div className="text-4xl">🎲</div>
+                  <div className="text-5xl">🎲</div>
                 )}
               </div>
             </div>
 
-            {/* Spin Button */}
-            <div className="text-center mb-8">
+            <div className="text-center">
               <Button
                 onClick={spinDice}
                 disabled={!canSpin || isSpinning}
                 size="lg"
-                className="bg-orange-600 hover:bg-orange-700 text-white px-12 py-4 text-xl rounded-full disabled:opacity-50"
+                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-12 py-4 text-xl font-semibold rounded-full shadow-lg transition-all duration-200"
               >
                 {isSpinning ? "Spinning..." : canSpin ? "Spin the Dice!" : `Wait ${formatTime(timeLeft)}`}
               </Button>
             </div>
-
-            {/* Exercise Pool */}
-            <div className="mb-6"></div>
           </Card>
         </div>
       </div>
 
-      {/* Edit Dialog */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-        <DialogContent className="max-w-md mx-4">
+        <DialogContent className="max-w-md mx-4 bg-white border-orange-200">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl">Edit Your Routine</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-gray-900">Edit Your Routine</DialogTitle>
           </DialogHeader>
 
-          <div className="py-4 space-y-6">
-            {/* Exercise Selection */}
+          <div className="py-6 space-y-8">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Exercises</h3>
               <ExerciseSelector
@@ -573,19 +566,18 @@ export default function Home() {
               />
             </div>
 
-            {/* Interval Configuration */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Exercise Interval</h3>
-              <div className="text-center mb-4">
+              <div className="text-center mb-6">
                 {intervalMinutes < 1 ? (
                   <>
-                    <span className="text-3xl font-bold text-orange-600">{intervalMinutes * 60}</span>
-                    <span className="text-gray-600 ml-2">seconds</span>
+                    <span className="text-4xl font-bold text-orange-700">{intervalMinutes * 60}</span>
+                    <span className="text-gray-600 ml-2 text-lg">seconds</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-3xl font-bold text-orange-600">{intervalMinutes}</span>
-                    <span className="text-gray-600 ml-2">minutes</span>
+                    <span className="text-4xl font-bold text-orange-700">{intervalMinutes}</span>
+                    <span className="text-gray-600 ml-2 text-lg">minutes</span>
                   </>
                 )}
               </div>
@@ -600,7 +592,7 @@ export default function Home() {
                 step={intervalMinutes <= 5 ? 0.5 : 5}
                 className="w-full"
               />
-              <div className="flex justify-between text-sm text-gray-500 mt-2">
+              <div className="flex justify-between text-sm text-gray-500 mt-3">
                 <span>30 sec</span>
                 <span>120 min</span>
               </div>
@@ -609,7 +601,7 @@ export default function Home() {
             <div className="text-center pt-4">
               <Button
                 onClick={() => setIsEditMode(false)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 font-semibold rounded-lg shadow-lg"
               >
                 Done Editing
               </Button>
@@ -618,35 +610,34 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      {/* Challenge Dialog */}
       <Dialog open={showChallengeDialog} onOpenChange={setShowChallengeDialog}>
-        <DialogContent className="max-w-sm sm:max-w-md mx-4">
+        <DialogContent className="max-w-sm sm:max-w-md mx-4 bg-white border-orange-200">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl sm:text-2xl">Challenge Time!</DialogTitle>
+            <DialogTitle className="text-center text-2xl font-bold text-gray-900">Challenge Time!</DialogTitle>
           </DialogHeader>
 
           {currentExercise && (
-            <div className="text-center py-4 sm:py-6">
-              <div className="text-5xl sm:text-6xl mb-4">{currentExercise.icon}</div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{currentExercise.name}</h3>
-              <p className="text-base sm:text-lg text-gray-600 mb-6">Complete this exercise challenge!</p>
+            <div className="text-center py-6">
+              <div className="text-6xl mb-6">{currentExercise.icon}</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">{currentExercise.name}</h3>
+              <p className="text-lg text-gray-600 mb-8">Complete this exercise challenge!</p>
 
-              <div className="space-y-4">
-                <p className="text-gray-700 font-medium">Did you complete the challenge?</p>
+              <div className="space-y-6">
+                <p className="text-gray-700 font-medium text-lg">Did you complete the challenge?</p>
 
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     onClick={() => handleChallengeComplete(false)}
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto px-6 sm:px-8"
+                    className="w-full sm:w-auto px-8 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium"
                   >
                     No, I'll try later
                   </Button>
                   <Button
                     onClick={() => handleChallengeComplete(true)}
                     size="lg"
-                    className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-6 sm:px-8"
+                    className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-8 py-3 font-semibold shadow-lg"
                   >
                     Yes, I did it!
                   </Button>
