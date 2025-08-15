@@ -69,6 +69,9 @@ export default function Home() {
   const [streakGlow, setStreakGlow] = useState(false)
   const [previousStreak, setPreviousStreak] = useState(0)
 
+  const [exerciseAnimation, setExerciseAnimation] = useState(false)
+  const [completedCountAnimation, setCompletedCountAnimation] = useState(false)
+
   const [confettiPieces, setConfettiPieces] = useState<
     Array<{
       id: number
@@ -80,9 +83,24 @@ export default function Home() {
     }>
   >([])
 
-  const getTodayString = () => {
-    return new Date().toISOString().split("T")[0]
-  }
+  useEffect(() => {
+    const savedRoutine = localStorage.getItem("exerciseRoutine")
+    if (savedRoutine) {
+      try {
+        const { exercises, interval } = JSON.parse(savedRoutine)
+        if (exercises && exercises.length > 0) {
+          setSelectedExercises(exercises)
+        }
+        if (interval) {
+          setIntervalMinutes(interval)
+        }
+      } catch (error) {
+        console.log("[v0] Error loading saved routine:", error)
+      }
+    }
+  }, [])
+
+  const [previousStreakData, setPreviousStreakData] = useState<any>(null)
 
   const checkAndUpdateDayStreak = () => {
     const today = getTodayString()
@@ -254,6 +272,7 @@ export default function Home() {
 
   const handleExerciseSelection = (exercises: Exercise[]) => {
     setSelectedExercises(exercises)
+    saveRoutineSettings(exercises, intervalMinutes)
   }
 
   const formatTime = (seconds: number) => {
@@ -284,7 +303,18 @@ export default function Home() {
     setShowChallengeDialog(false)
 
     if (completed) {
-      setCompletedChallenges((prev) => prev + 1)
+      setExerciseAnimation(true)
+      setCompletedCountAnimation(true)
+
+      setTimeout(() => {
+        setCompletedChallenges((prev) => prev + 1)
+      }, 200)
+
+      setTimeout(() => {
+        setExerciseAnimation(false)
+        setCompletedCountAnimation(false)
+      }, 1000)
+
       updateStreak()
     }
 
@@ -301,6 +331,18 @@ export default function Home() {
     setCurrentExercise(null)
     setCompletedChallenges(0)
     setIsEditMode(false)
+  }
+
+  const getTodayString = () => {
+    return new Date().toISOString().split("T")[0]
+  }
+
+  const saveRoutineSettings = (exercises: Exercise[], interval: number) => {
+    const routineData = {
+      exercises,
+      interval,
+    }
+    localStorage.setItem("exerciseRoutine", JSON.stringify(routineData))
   }
 
   if (appState === "summary") {
@@ -383,8 +425,20 @@ export default function Home() {
 
             {/* Stats Bar */}
             <div className="flex justify-center gap-4 mb-8">
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{completedChallenges}</div>
+              <div
+                className={cn(
+                  "text-center p-4 bg-green-50 rounded-lg transition-all duration-500",
+                  completedCountAnimation && "scale-125 bg-green-100 shadow-lg shadow-green-300/50",
+                )}
+              >
+                <div
+                  className={cn(
+                    "text-2xl font-bold text-green-600 transition-all duration-300",
+                    completedCountAnimation && "text-3xl animate-bounce",
+                  )}
+                >
+                  {completedChallenges}
+                </div>
                 <div className="text-sm text-gray-600">Completed</div>
               </div>
               <div
@@ -422,6 +476,7 @@ export default function Home() {
                   "w-32 h-32 bg-white rounded-2xl shadow-2xl border-4 border-orange-200 flex items-center justify-center transition-transform duration-300",
                   isSpinning && "animate-bounce",
                   canSpin && "hover:scale-105 cursor-pointer",
+                  exerciseAnimation && "animate-pulse scale-110",
                 )}
                 onClick={spinDice}
               >
@@ -429,7 +484,14 @@ export default function Home() {
                   <div className="text-4xl animate-spin">🎲</div>
                 ) : currentExercise && !canSpin ? (
                   <div className="text-center">
-                    <div className="text-4xl mb-1">{currentExercise.icon}</div>
+                    <div
+                      className={cn(
+                        "text-4xl mb-1 transition-all duration-500",
+                        exerciseAnimation && "text-5xl animate-bounce",
+                      )}
+                    >
+                      {currentExercise.icon}
+                    </div>
                     <div className="text-xs font-semibold text-gray-700">{currentExercise.name}</div>
                   </div>
                 ) : (
@@ -492,7 +554,10 @@ export default function Home() {
               </div>
               <Slider
                 value={[intervalMinutes]}
-                onValueChange={(value) => setIntervalMinutes(value[0])}
+                onValueChange={(value) => {
+                  setIntervalMinutes(value[0])
+                  saveRoutineSettings(selectedExercises, value[0])
+                }}
                 max={120}
                 min={0.5}
                 step={intervalMinutes <= 5 ? 0.5 : 5}
