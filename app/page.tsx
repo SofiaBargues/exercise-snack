@@ -318,7 +318,8 @@ export default function Home() {
       updateStreak()
     }
 
-    // Timer will start automatically due to useEffect when timeLeft > 0 and canSpin is false
+    setHasStarted(true)
+    setTimeLeft(intervalMinutes * 60)
   }
 
   const handleReset = () => {
@@ -607,11 +608,7 @@ export default function Home() {
                     No, I'll try later
                   </Button>
                   <Button
-                    onClick={() => {
-                      handleChallengeComplete(true)
-                      setHasStarted(true)
-                      setTimeLeft(intervalMinutes * 60)
-                    }}
+                    onClick={() => handleChallengeComplete(true)}
                     size="lg"
                     className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-6 sm:px-8"
                   >
