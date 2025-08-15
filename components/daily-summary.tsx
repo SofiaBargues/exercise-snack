@@ -260,8 +260,7 @@ ${getMotivationalMessage()}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-white/50 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Exercise Dice
-            </Button>
+              Back to Exercise Snack</Button>
           </div>
 
           {/* Summary content for image generation */}

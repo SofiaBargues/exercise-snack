@@ -456,7 +456,7 @@ export default function Home() {
         <div className="space-y-8">
           <Card className="p-8 bg-white/95 backdrop-blur-sm border-orange-200 shadow-xl">
             <div className="text-center mb-8">
-              <h1 className="font-bold text-gray-900 mb-3 text-5xl">Exercise Dice</h1>
+              <h1 className="font-bold text-gray-900 mb-3 text-5xl">Exercise Snack</h1>
               <p className="text-gray-600 text-xl">Spin the dice when ready for your next exercise snack!</p>
             </div>
 
