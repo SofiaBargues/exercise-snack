@@ -249,6 +249,42 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    const savedCountdown = localStorage.getItem("exerciseCountdown")
+    if (savedCountdown) {
+      try {
+        const { timeLeft: savedTimeLeft, canSpin: savedCanSpin, timestamp } = JSON.parse(savedCountdown)
+        const now = Date.now()
+        const elapsed = Math.floor((now - timestamp) / 1000)
+
+        if (savedTimeLeft > 0 && elapsed < savedTimeLeft) {
+          const remainingTime = savedTimeLeft - elapsed
+          setTimeLeft(remainingTime)
+          setCanSpin(false)
+        } else {
+          setTimeLeft(0)
+          setCanSpin(true)
+        }
+      } catch (error) {
+        console.log("[v0] Error loading saved countdown:", error)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (timeLeft > 0 || !canSpin) {
+      const countdownData = {
+        timeLeft,
+        canSpin,
+        timestamp: Date.now(),
+      }
+      localStorage.setItem("exerciseCountdown", JSON.stringify(countdownData))
+    } else {
+      // Clear countdown data when timer is done
+      localStorage.removeItem("exerciseCountdown")
+    }
+  }, [timeLeft, canSpin])
+
+  useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
     if (timeLeft > 0 && !canSpin) {
