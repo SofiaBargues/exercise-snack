@@ -234,28 +234,15 @@ ${getMotivationalMessage()}
     }
   }
 
-  const handleShare = async () => {
-    const shareData = {
-      title: "My Exercise Summary",
-      text: generateShareableContent(),
-    }
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData)
-      } catch (err) {
-        console.log("Error sharing:", err)
-        setShowShareDialog(true)
-      }
-    } else {
-      setShowShareDialog(true)
-    }
+  const handleShare = () => {
+    setShowShareDialog(true)
   }
 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(generateShareableContent())
       alert("Summary copied to clipboard!")
+      setShowShareDialog(false) // Close dialog after copying
     } catch (err) {
       console.log("Failed to copy:", err)
     }
@@ -356,15 +343,14 @@ ${getMotivationalMessage()}
         </div>
       </div>
 
-      {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent className="max-w-md bg-white border-orange-200">
           <DialogHeader>
-            <DialogTitle className="text-center font-bold text-gray-900">Share Your Progress</DialogTitle>
+            <DialogTitle className="text-center font-bold text-gray-900">Copy Summary</DialogTitle>
           </DialogHeader>
 
           <div className="py-4">
-            <div className="bg-orange-50 p-4 rounded-lg mb-4 text-sm whitespace-pre-line border border-orange-200">
+            <div className="bg-orange-50 p-4 rounded-lg mb-4 text-sm whitespace-pre-line border border-orange-200 max-h-64 overflow-y-auto">
               {generateShareableContent()}
             </div>
 
