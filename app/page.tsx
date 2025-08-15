@@ -395,7 +395,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 relative overflow-hidden">
+    <div className="min-h-screen bg-orange-50 relative overflow-hidden flex items-center justify-center">
       {showCelebration && confettiPieces.length > 0 && (
         <div className="fixed inset-0 z-40 pointer-events-none">
           {confettiPieces.map((piece) => (
@@ -452,7 +452,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className="px-4 py-6 sm:py-12 relative z-10 max-w-4xl mx-auto">
+      <div className="px-4 py-6 sm:py-12 relative z-10 w-full max-w-4xl">
         <div className="space-y-6">
           <Card className="p-6 sm:p-8">
             <div className="text-center mb-6">
