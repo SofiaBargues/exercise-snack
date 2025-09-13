@@ -1,37 +1,61 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ArrowLeft } from "lucide-react"
-import type { Exercise } from "@/app/page"
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ArrowLeft } from "lucide-react";
+import type { Exercise } from "@/app/page";
 
 interface DailySummaryProps {
-  completedChallenges: number
-  exercises: Exercise[]
-  dayStreak: number
-  onReset: () => void
-  onBack: () => void
+  completedChallenges: number;
+  exercises: Exercise[];
+  dayStreak: number;
+  onReset: () => void;
+  onBack: () => void;
 }
 
-export function DailySummary({ completedChallenges, exercises, dayStreak, onReset, onBack }: DailySummaryProps) {
-  const [showShareDialog, setShowShareDialog] = useState(false)
-  const summaryRef = useRef<HTMLDivElement>(null)
+export function DailySummary({
+  completedChallenges,
+  exercises,
+  dayStreak,
+  onReset,
+  onBack,
+}: DailySummaryProps) {
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const summaryRef = useRef<HTMLDivElement>(null);
+
+  // Add state for today's date string to avoid SSR/CSR mismatch
+  const [todayString, setTodayString] = useState<string>("");
+
+  useEffect(() => {
+    const today = new Date();
+    setTodayString(
+      `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
+    );
+  }, []);
 
   // Calculate health metrics
-  const caloriesBurned = completedChallenges * 15 // Estimate 15 calories per exercise snack
-  const minutesActive = completedChallenges * 2 // Estimate 2 minutes per exercise
-  const healthYearsGained = (completedChallenges * 0.002).toFixed(3) // Rough estimate based on exercise benefits
-  const stressReduction = Math.min(completedChallenges * 5, 100) // Max 100% stress reduction
+  const caloriesBurned = completedChallenges * 15; // Estimate 15 calories per exercise snack
+  const minutesActive = completedChallenges * 2; // Estimate 2 minutes per exercise
+  const healthYearsGained = (completedChallenges * 0.002).toFixed(3); // Rough estimate based on exercise benefits
+  const stressReduction = Math.min(completedChallenges * 5, 100); // Max 100% stress reduction
 
   const getMotivationalMessage = () => {
-    if (completedChallenges === 0) return "Every journey starts with a single step!"
-    if (completedChallenges < 3) return "Great start! Keep building that momentum!"
-    if (completedChallenges < 6) return "Fantastic progress! You're on fire!"
-    if (completedChallenges < 10) return "Amazing dedication! You're crushing it!"
-    return "Incredible! You're a fitness champion!"
-  }
+    if (completedChallenges === 0)
+      return "Every journey starts with a single step!";
+    if (completedChallenges < 3)
+      return "Great start! Keep building that momentum!";
+    if (completedChallenges < 6) return "Fantastic progress! You're on fire!";
+    if (completedChallenges < 10)
+      return "Amazing dedication! You're crushing it!";
+    return "Incredible! You're a fitness champion!";
+  };
 
   const generateShareableContent = () => {
     return `💪 My Exercise Summary 💪
@@ -45,38 +69,37 @@ export function DailySummary({ completedChallenges, exercises, dayStreak, onRese
 
 ${getMotivationalMessage()}
 
-#ExerciseSnacks #HealthyHabits #FitnessJourney`
-  }
+#ExerciseSnacks #HealthyHabits #FitnessJourney`;
+  };
 
   const downloadSummaryImage = async () => {
-    if (!summaryRef.current) return
+    if (!summaryRef.current) return;
 
     try {
       // Create canvas
-      const canvas = document.createElement("canvas")
-      const ctx = canvas.getContext("2d")
-      if (!ctx) return
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
       // Set canvas size
-      canvas.width = 800
-      canvas.height = 1000
+      canvas.width = 800;
+      canvas.height = 1000;
 
       // Background
-      ctx.fillStyle = "#f0f9ff"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = "#f0f9ff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Title
-      ctx.fillStyle = "#1f2937"
-      ctx.font = "bold 56px system-ui, -apple-system, sans-serif"
-      ctx.textAlign = "center"
-      ctx.fillText("Exercise Summary", canvas.width / 2, 100)
+      ctx.fillStyle = "#1f2937";
+      ctx.font = "bold 56px system-ui, -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Exercise Summary", canvas.width / 2, 100);
 
       // Date
-      ctx.font = "28px system-ui, -apple-system, sans-serif"
-      ctx.fillStyle = "#374151"
-      const today = new Date()
-      const formattedDate = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`
-      ctx.fillText(formattedDate, canvas.width / 2, 150)
+      ctx.font = "28px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = "#374151";
+      // Use todayString instead of generating a new Date here
+      ctx.fillText(todayString, canvas.width / 2, 150);
 
       // Stats
       const stats = [
@@ -116,57 +139,57 @@ ${getMotivationalMessage()}
           iconBg: "#a855f7",
           textColor: "#6366f1",
         },
-      ]
+      ];
 
-      const gridStartY = 220
-      const boxWidth = 200
-      const boxHeight = 160
-      const spacing = 50
+      const gridStartY = 220;
+      const boxWidth = 200;
+      const boxHeight = 160;
+      const spacing = 50;
 
       stats.forEach((stat, index) => {
-        const x = 100 + index * (boxWidth + spacing)
-        const y = gridStartY
+        const x = 100 + index * (boxWidth + spacing);
+        const y = gridStartY;
 
         // Draw rounded rectangle background
-        ctx.fillStyle = stat.bgColor
-        ctx.beginPath()
-        ctx.roundRect(x, y, boxWidth, boxHeight, 20)
-        ctx.fill()
+        ctx.fillStyle = stat.bgColor;
+        ctx.beginPath();
+        ctx.roundRect(x, y, boxWidth, boxHeight, 20);
+        ctx.fill();
 
         // Draw icon circle background
-        const iconSize = 60
-        const iconX = x + boxWidth / 2
-        const iconY = y + 40
+        const iconSize = 60;
+        const iconX = x + boxWidth / 2;
+        const iconY = y + 40;
 
-        ctx.fillStyle = stat.iconBg
-        ctx.beginPath()
-        ctx.arc(iconX, iconY, iconSize / 2, 0, 2 * Math.PI)
-        ctx.fill()
+        ctx.fillStyle = stat.iconBg;
+        ctx.beginPath();
+        ctx.arc(iconX, iconY, iconSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
 
         // Draw icon
-        ctx.fillStyle = "white"
-        ctx.font = "32px system-ui, -apple-system, sans-serif"
-        ctx.textAlign = "center"
-        ctx.fillText(stat.icon, iconX, iconY + 10)
+        ctx.fillStyle = "white";
+        ctx.font = "32px system-ui, -apple-system, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(stat.icon, iconX, iconY + 10);
 
         // Draw main value/label
-        ctx.fillStyle = stat.textColor
-        ctx.font = "bold 36px system-ui, -apple-system, sans-serif"
-        const mainText = stat.value || stat.label
-        ctx.fillText(mainText, iconX, iconY + 60)
+        ctx.fillStyle = stat.textColor;
+        ctx.font = "bold 36px system-ui, -apple-system, sans-serif";
+        const mainText = stat.value || stat.label;
+        ctx.fillText(mainText, iconX, iconY + 60);
 
         // Draw sublabel
-        ctx.fillStyle = "#374151"
-        ctx.font = "18px system-ui, -apple-system, sans-serif"
-        ctx.fillText(stat.sublabel, iconX, iconY + 85)
-      })
+        ctx.fillStyle = "#374151";
+        ctx.font = "18px system-ui, -apple-system, sans-serif";
+        ctx.fillText(stat.sublabel, iconX, iconY + 85);
+      });
 
       // Health Impact
-      const healthY = 500
-      ctx.fillStyle = "#1f2937"
-      ctx.font = "bold 42px system-ui, -apple-system, sans-serif"
-      ctx.textAlign = "center"
-      ctx.fillText("Health Impact", canvas.width / 2, healthY)
+      const healthY = 500;
+      ctx.fillStyle = "#1f2937";
+      ctx.font = "bold 42px system-ui, -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Health Impact", canvas.width / 2, healthY);
 
       const healthStats = [
         {
@@ -187,66 +210,73 @@ ${getMotivationalMessage()}
           icon: "🧠",
           color: "#f97316",
         },
-      ]
+      ];
 
-      const healthStartY = healthY + 80
-      const healthSpacing = 250
-      const healthStartX = (canvas.width - (healthStats.length - 1) * healthSpacing) / 2
+      const healthStartY = healthY + 80;
+      const healthSpacing = 250;
+      const healthStartX =
+        (canvas.width - (healthStats.length - 1) * healthSpacing) / 2;
 
       healthStats.forEach((stat, index) => {
-        const x = healthStartX + index * healthSpacing
+        const x = healthStartX + index * healthSpacing;
 
         // Icon
-        ctx.font = "48px system-ui, -apple-system, sans-serif"
-        ctx.fillText(stat.icon, x, healthStartY)
+        ctx.font = "48px system-ui, -apple-system, sans-serif";
+        ctx.fillText(stat.icon, x, healthStartY);
 
         // Value
-        ctx.fillStyle = stat.color
-        ctx.font = "bold 42px system-ui, -apple-system, sans-serif"
-        ctx.fillText(stat.value, x, healthStartY + 60)
+        ctx.fillStyle = stat.color;
+        ctx.font = "bold 42px system-ui, -apple-system, sans-serif";
+        ctx.fillText(stat.value, x, healthStartY + 60);
 
         // Label
-        ctx.fillStyle = "#374151"
-        ctx.font = "16px system-ui, -apple-system, sans-serif"
-        ctx.fillText(stat.label, x, healthStartY + 85)
-      })
+        ctx.fillStyle = "#374151";
+        ctx.font = "16px system-ui, -apple-system, sans-serif";
+        ctx.fillText(stat.label, x, healthStartY + 85);
+      });
 
       // Motivational message
-      const messageY = 800
-      ctx.fillStyle = "#1f2937"
-      ctx.font = "bold 32px system-ui, -apple-system, sans-serif"
-      ctx.textAlign = "center"
-      ctx.fillText(getMotivationalMessage(), canvas.width / 2, messageY)
+      const messageY = 800;
+      ctx.fillStyle = "#1f2937";
+      ctx.font = "bold 32px system-ui, -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(getMotivationalMessage(), canvas.width / 2, messageY);
 
       // Footer
-      ctx.fillStyle = "#6b7280"
-      ctx.font = "20px system-ui, -apple-system, sans-serif"
-      ctx.fillText("Generated by Exercise Snacks App", canvas.width / 2, canvas.height - 50)
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "20px system-ui, -apple-system, sans-serif";
+      ctx.fillText(
+        "Generated by Exercise Snacks App",
+        canvas.width / 2,
+        canvas.height - 50
+      );
 
       // Download the image
-      const link = document.createElement("a")
-      link.download = `exercise-summary-${new Date().toISOString().split("T")[0]}.png`
-      link.href = canvas.toDataURL()
-      link.click()
+      const link = document.createElement("a");
+      link.download = `exercise-summary-${
+        new Date().toISOString().split("T")[0]
+      }.png`;
+      link.href = canvas.toDataURL();
+      link.click();
     } catch (error) {
-      console.error("Error generating image:", error)
-      alert("Failed to generate image. Please try again.")
+      console.error("Error generating image:", error);
+      alert("Failed to generate image. Please try again.");
     }
-  }
+  };
 
   const handleShare = () => {
-    setShowShareDialog(true)
-  }
+    setShowShareDialog(true);
+  };
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(generateShareableContent())
-      alert("Summary copied to clipboard!")
-      setShowShareDialog(false) // Close dialog after copying
+      await navigator.clipboard.writeText(generateShareableContent());
+      alert("Summary copied to clipboard!");
+      setShowShareDialog(false); // Close dialog after copying
     } catch (err) {
-      console.log("Failed to copy:", err)
+      console.log("Failed to copy:", err);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-orange-50">
@@ -260,41 +290,64 @@ ${getMotivationalMessage()}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-white/50 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Exercise Snack</Button>
+              Back to Exercise Snack
+            </Button>
           </div>
 
           {/* Summary content for image generation */}
           <div ref={summaryRef}>
             {/* Header */}
             <div className="text-center mb-6 md:mb-12">
-              <h1 className="text-2xl md:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Daily Summary</h1>
-              <p className="text-sm md:text-xl text-gray-600">Your exercise achievements today</p>
+              <h1 className="text-2xl md:text-5xl font-bold text-gray-900 mb-2 md:mb-4">
+                Daily Summary
+              </h1>
+              <p className="text-sm md:text-xl text-gray-600">
+                Your exercise achievements today
+              </p>
+              {/* Optionally show the date in the UI, using todayString */}
+              {/* <div className="text-xs text-gray-400">{todayString}</div> */}
             </div>
 
             {/* Main Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-12">
               <Card className="p-3 md:p-6 text-center bg-white border-green-200 shadow-lg">
                 <div className="text-2xl md:text-4xl mb-1 md:mb-3">✅</div>
-                <div className="text-xl md:text-3xl font-bold text-green-700 mb-1 md:mb-2">{completedChallenges}</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">Challenges Completed</div>
+                <div className="text-xl md:text-3xl font-bold text-green-700 mb-1 md:mb-2">
+                  {completedChallenges}
+                </div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                  Challenges Completed
+                </div>
               </Card>
 
               <Card className="p-3 md:p-6 text-center bg-white border-orange-200 shadow-lg">
                 <div className="text-2xl md:text-4xl mb-1 md:mb-3">🔥</div>
-                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">{dayStreak}</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">Day Streak</div>
+                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">
+                  {dayStreak}
+                </div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                  Day Streak
+                </div>
               </Card>
 
               <Card className="p-3 md:p-6 text-center bg-white border-orange-200 shadow-lg">
                 <div className="text-2xl md:text-4xl mb-1 md:mb-3">💪</div>
-                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">{caloriesBurned}</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">Calories Burned</div>
+                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">
+                  {caloriesBurned}
+                </div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                  Calories Burned
+                </div>
               </Card>
 
               <Card className="p-3 md:p-6 text-center bg-white border-orange-200 shadow-lg">
                 <div className="text-2xl md:text-4xl mb-1 md:mb-3">⏱️</div>
-                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">{minutesActive}</div>
-                <div className="text-xs md:text-sm text-gray-600 font-medium">Minutes Active</div>
+                <div className="text-xl md:text-3xl font-bold text-orange-700 mb-1 md:mb-2">
+                  {minutesActive}
+                </div>
+                <div className="text-xs md:text-sm text-gray-600 font-medium">
+                  Minutes Active
+                </div>
               </Card>
             </div>
 
@@ -307,16 +360,28 @@ ${getMotivationalMessage()}
               <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-6">
                 <div className="text-center">
                   <div className="text-2xl md:text-5xl mb-1 md:mb-3">💪</div>
-                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">+{healthYearsGained}</div>
-                  <div className="text-xs md:text-sm text-gray-700 font-medium">Health Years Gained</div>
-                  <div className="text-xs text-gray-500 mt-1 hidden md:block">Based on exercise longevity studies</div>
+                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">
+                    +{healthYearsGained}
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-700 font-medium">
+                    Health Years Gained
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 hidden md:block">
+                    Based on exercise longevity studies
+                  </div>
                 </div>
 
                 <div className="text-center">
                   <div className="text-2xl md:text-5xl mb-1 md:mb-3">😊</div>
-                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">{stressReduction}%</div>
-                  <div className="text-xs md:text-sm text-gray-700 font-medium">Stress Reduction</div>
-                  <div className="text-xs text-gray-500 mt-1 hidden md:block">Exercise releases endorphins</div>
+                  <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">
+                    {stressReduction}%
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-700 font-medium">
+                    Stress Reduction
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 hidden md:block">
+                    Exercise releases endorphins
+                  </div>
                 </div>
 
                 <div className="text-center">
@@ -324,8 +389,12 @@ ${getMotivationalMessage()}
                   <div className="text-sm md:text-2xl font-bold text-orange-700 mb-1 md:mb-2">
                     +{Math.min(completedChallenges * 10, 100)}%
                   </div>
-                  <div className="text-xs md:text-sm text-gray-700 font-medium">Focus Improvement</div>
-                  <div className="text-xs text-gray-500 mt-1 hidden md:block">Better blood flow to brain</div>
+                  <div className="text-xs md:text-sm text-gray-700 font-medium">
+                    Focus Improvement
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 hidden md:block">
+                    Better blood flow to brain
+                  </div>
                 </div>
               </div>
             </Card>
@@ -345,13 +414,15 @@ ${getMotivationalMessage()}
       </div>
 
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-        <DialogContent className="max-w-md bg-white border-orange-200">
+        <DialogContent className="max-w-md bg-white  border-orange-200">
           <DialogHeader>
-            <DialogTitle className="text-center font-bold text-gray-900">Copy Summary</DialogTitle>
+            <DialogTitle className="text-center font-bold text-gray-900">
+              Copy Summary
+            </DialogTitle>
           </DialogHeader>
 
           <div className="py-4">
-            <div className="bg-orange-50 p-4 rounded-lg mb-4 text-sm whitespace-pre-line border border-orange-200 max-h-64 overflow-y-auto">
+            <div className="h-full bg-orange-50 p-4 rounded-lg mb-4 text-sm whitespace-pre-line border border-orange-200 max-h-72 overflow-y-auto">
               {generateShareableContent()}
             </div>
 
@@ -374,5 +445,5 @@ ${getMotivationalMessage()}
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

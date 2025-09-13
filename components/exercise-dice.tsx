@@ -2,18 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { StickerCollection } from "@/components/sticker-reward";
 import { DraggableSticker } from "@/components/draggable-sticker";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise, StickerPosition } from "@/app/page";
+import { DiceBox } from "@/components/dice-box";
+import { StatsBar } from "@/components/stats-bar";
+import { TimerDisplay } from "@/components/timer-display";
+import { ExercisePool } from "@/components/exercise-pool";
+import { ActionButtons } from "@/components/action-buttons";
+import { ChallengeDialog } from "@/components/challenge-dialog";
 
 interface ExerciseDiceProps {
   exercises: Exercise[];
@@ -25,7 +23,7 @@ interface ExerciseDiceProps {
   onStickerMove: (id: string, x: number, y: number) => void;
   onBack: () => void;
 }
-
+throw new Error();
 export function ExerciseDice({
   exercises,
   config,
@@ -129,7 +127,7 @@ export function ExerciseDice({
         </div>
 
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center  sm:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             Exercise Snack
           </h1>
@@ -139,63 +137,25 @@ export function ExerciseDice({
         </div>
 
         {/* Stats Bar */}
-        <div className="flex justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
-          <Card className="px-3 py-2 sm:px-4 sm:py-2">
-            <div className="text-center">
-              <div className="text-xl sm:text-2xl font-bold text-orange-600">
-                {config.repetitions}
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600">Reps</div>
-            </div>
-          </Card>
-          <Card className="px-3 py-2 sm:px-4 sm:py-2">
-            <div className="text-center">
-              <div className="text-xl sm:text-2xl font-bold text-orange-600">
-                {config.intervalMinutes}m
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600">Interval</div>
-            </div>
-          </Card>
-        </div>
+        <StatsBar
+          repetitions={config.repetitions}
+          intervalMinutes={config.intervalMinutes}
+        />
 
         {/* Timer */}
-        <div className="text-center mb-6 sm:mb-8">
-          {canSpin && (
-            <div className="text-4xl sm:text-6xl font-bold text-gray-900 mb-2">
-              Ready!
-            </div>
-          )}
-          <div className="text-base sm:text-lg text-gray-600">
-            {canSpin ? "Ready to spin!" : "Next exercise in..."}
-          </div>
-        </div>
+        <TimerDisplay
+          canSpin={canSpin}
+          timeLeft={timeLeft}
+          formatTime={formatTime}
+        />
 
         {/* Dice */}
         <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="relative">
-            <div
-              className={cn(
-                "w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-2xl shadow-2xl border-4 border-orange-200 flex items-center justify-center transition-transform duration-2000 ease-out",
-                isSpinning && "animate-bounce"
-              )}
-              style={{ transform: `rotate(${diceRotation}deg)` }}
-            >
-              {isSpinning ? (
-                <div className="text-3xl sm:text-4xl animate-spin">🎲</div>
-              ) : currentExercise ? (
-                <div className="text-center">
-                  <div className="text-3xl sm:text-4xl mb-1">
-                    {currentExercise.icon}
-                  </div>
-                  <div className="text-xs font-semibold text-gray-700">
-                    {currentExercise.name}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-3xl sm:text-4xl">🎲</div>
-              )}
-            </div>
-          </div>
+          <DiceBox
+            isSpinning={isSpinning}
+            diceRotation={diceRotation}
+            currentExercise={currentExercise}
+          />
         </div>
 
         {/* Spin Button */}
@@ -213,104 +173,34 @@ export function ExerciseDice({
           >
             {isSpinning ? "Spinning..." : "Spin the Dice!"}
           </Button>
-          {!canSpin && !isSpinning && (
-            <div className="mt-2 text-sm text-gray-600">
-              Next spin in: {formatTime(timeLeft)}
-            </div>
-          )}
         </div>
 
         {/* Selected Exercises */}
-        <Card className="p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="p-4 sm:p-6 mb-6 sm:mb-8 bg-white rounded shadow">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 text-center">
             Your Exercise Pool
           </h3>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
-            {exercises.map((exercise) => (
-              <div
-                key={exercise.id}
-                className={cn(
-                  "text-center p-2 sm:p-3 rounded-lg transition-all",
-                  currentExercise?.id === exercise.id
-                    ? "bg-orange-100 border-2 border-orange-500"
-                    : "bg-gray-50"
-                )}
-              >
-                <div className="text-xl sm:text-2xl mb-1">{exercise.icon}</div>
-                <div className="text-xs font-medium text-gray-700">
-                  {exercise.name}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+          <ExercisePool
+            exercises={exercises}
+            currentExerciseId={currentExercise?.id}
+          />
+        </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-          <StickerCollection stickers={stickers.map((s) => s.emoji)} />
-          <Button
-            onClick={onViewSummary}
-            variant="outline"
-            size="lg"
-            className="w-full sm:w-auto bg-transparent"
-          >
-            View Daily Summary
-          </Button>
-        </div>
+        <ActionButtons
+          stickers={stickers.map((s) => s.emoji)}
+          onViewSummary={onViewSummary}
+        />
       </div>
 
       {/* Challenge Dialog */}
-      <Dialog open={showChallengeDialog} onOpenChange={setShowChallengeDialog}>
-        <DialogContent className="max-w-sm sm:max-w-md mx-4">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl sm:text-2xl">
-              Challenge Time!
-            </DialogTitle>
-          </DialogHeader>
-
-          {currentExercise && (
-            <div className="text-center py-4 sm:py-6">
-              <div className="text-5xl sm:text-6xl mb-4">
-                {currentExercise.icon}
-              </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                {currentExercise.name}
-              </h3>
-              <p className="text-base sm:text-lg text-gray-600 mb-6">
-                Do{" "}
-                <span className="font-bold text-orange-600">
-                  {config.repetitions}
-                </span>{" "}
-                repetitions
-              </p>
-
-              <div className="space-y-4">
-                <p className="text-gray-700 font-medium">
-                  Did you complete the challenge?
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                  <Button
-                    onClick={() => handleChallengeResponse(false)}
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto px-6 sm:px-8"
-                  >
-                    No, I'll try later
-                  </Button>
-                  <Button
-                    onClick={() => handleChallengeResponse(true)}
-                    size="lg"
-                    className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-6 sm:px-8"
-                  >
-                    Yes, I did it!
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ChallengeDialog
+        open={showChallengeDialog}
+        onOpenChange={setShowChallengeDialog}
+        currentExercise={currentExercise}
+        repetitions={config.repetitions}
+        onChallengeResponse={handleChallengeResponse}
+      />
     </div>
   );
 }
